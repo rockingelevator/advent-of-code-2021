@@ -7,8 +7,8 @@ defmodule Sonar do
       end)
 
       # V1 - Reduce
-    input = Enum.to_list(stream)
-    {counter, _ } = Enum.reduce(input, {0, -1}, fn
+    {counter, _ } = Enum.to_list(stream)
+      |> Enum.reduce({0, -1}, fn
         (depth, {_, previous}) when previous < 0 -> {0, depth}
         (depth, {c, previous}) when depth > previous  -> {c + 1, depth}
         (depth, {c, previous}) when depth <= previous  -> {c, depth}
