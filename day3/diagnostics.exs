@@ -1,4 +1,6 @@
-# Day 3, Part 1
+# Day 3, Binary Diagnostic
+# Part 1
+
 defmodule Diagnostics do
   def go(file) do
     stream = File.stream!(file)
@@ -6,6 +8,12 @@ defmodule Diagnostics do
 
     input = Enum.to_list(stream)
 
+    # The main idea is to treat the input as a matrix
+    # and 1. convert columns to rows
+    # then 2. find the most common row item ("1" or "0") in each row (list of chars)
+    # finaly 3. convert string to decimal
+
+    # 1.
     rows = input
       |> Enum.reduce([], fn (row, acc) ->
         chars = String.split(row, "", trim: true)
@@ -18,8 +26,11 @@ defmodule Diagnostics do
           end
         end)
 
+    # 2.
     gamma_raw = Enum.map(rows, &maxbit/1)
     epsilon_raw = Enum.map(gamma_raw, &(&1 < 1 && 1 || 0))
+
+    # 3.
     parse_raw = &(Integer.parse(Enum.join(&1, ""), 2))
     {gamma,_} = parse_raw.(gamma_raw)
     {epsilon,_} = parse_raw.(epsilon_raw)
@@ -27,6 +38,7 @@ defmodule Diagnostics do
     IO.puts "#{gamma * epsilon}"
   end
 
+  # 2.
   defp maxbit(row) do
     {zero, ones} = row
       |> String.split("", trim: true)
