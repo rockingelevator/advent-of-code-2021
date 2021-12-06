@@ -75,10 +75,4 @@ defmodule Bingo do
       end)
     IO.puts "Final score: #{score * last_number}"
   end
-
-
-  # defp unique_numbers(rows) do
-  #   rows
-  #   |> Enum.reduce([], fn num, uniqs -> if(Enum.member?(uniqs, num), do: uniqs, else: [uniqs | num]) end)
-  # end
 end
