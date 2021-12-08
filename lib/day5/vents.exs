@@ -1,9 +1,9 @@
 # Day 5, Hydrothermal Venture
-# Part 1
+# Part 2
 
 defmodule Vents do
   def go(file) do
-    points =
+    lines =
       File.stream!(file)
       |> Stream.map(fn row ->
         row
@@ -16,48 +16,35 @@ defmodule Vents do
         |> List.to_tuple()
       end)
       |> Enum.to_list()
-      # get only vertical or horizontal lines
+      # get only vertical, horizontal and 45deg lines
       |> Enum.filter(fn {{x_start, y_start}, {x_end, y_end}} ->
-        x_start == x_end || y_start == y_end
-      end)
-      # makes sure that all lines are drawn from left to right, top to bottom order
-      |> Enum.map(fn
-        {{x_start, y}, {x_end, y}} when x_start <= x_end -> {{x_start, y}, {x_end, y}}
-        {{x_start, y}, {x_end, y}} when x_start > x_end -> {{x_end, y}, {x_start, y}}
-        {{x, y_start}, {x, y_end}} when y_start <= y_end -> {{x, y_start}, {x, y_end}}
-        {{x, y_start}, {x, y_end}} when y_start > y_end -> {{x, y_end}, {x, y_start}}
+        # x_start == x_end || y_start == y_end
+        x_start == x_end || y_start == y_end || abs(x_start - x_end) == abs(y_start - y_end)
       end)
 
     chart =
-      for _ <- 0..999 do
-        row = nil
-        for _ <- 0..999, do: 0
-      end
+      lines
+      |> Enum.reduce(%{}, fn
+        {{x1, y}, {x2, y}}, chart ->
+          Enum.reduce(x1..x2, chart, fn x, chart ->
+            Map.update(chart, {x, y}, 1, &(&1 + 1))
+          end)
 
-    chart =
-      chart
-      |> Enum.with_index()
-      |> Enum.map(fn {row, row_index} ->
-        row
-        |> Enum.with_index()
-        |> Enum.map(fn {el, i} ->
-          lines_count =
-            points
-            |> Enum.filter(fn {{x_start, y_start}, {x_end, y_end}} ->
-              # element lies on the horizontal line
-              # or elementt lies on vertical line
-              (y_start == y_end && row_index == y_end && i >= x_start && i <= x_end) ||
-                (x_start == x_end && i == x_end && row_index >= y_start && row_index <= y_end)
-            end)
-            |> Enum.count()
-        end)
+        {{x, y1}, {x, y2}}, chart ->
+          Enum.reduce(y1..y2, chart, fn y, chart ->
+            Map.update(chart, {x, y}, 1, &(&1 + 1))
+          end)
+
+        {{x1, y1}, {x2, y2}}, chart ->
+          x1..x2
+          |> Enum.with_index()
+          |> Enum.reduce(chart, fn {x, i}, chart ->
+            # for 45deg lines y changes by +1/-1
+            y = (y2 > y1 && y1 + i) || y1 - i
+            Map.update(chart, {x, y}, 1, &(&1 + 1))
+          end)
       end)
 
-    # count chart points with overlaping lines on them
-    chart
-    |> Enum.reduce(0, fn row, total ->
-      count = row |> Enum.filter(&(&1 >= 2)) |> Enum.count()
-      total + count
-    end)
+    chart |> Map.values() |> Enum.count(&(&1 > 1))
   end
 end
