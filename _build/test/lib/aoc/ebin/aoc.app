@@ -1,0 +1,11 @@
+{application,aoc,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"aoc"},
+              {modules,['Elixir.Aoc','Elixir.Aoc.Day1.Part1',
+                        'Elixir.Aoc.Day1.Part2','Elixir.Aoc.Day2',
+                        'Elixir.Aoc.Day3.Part1','Elixir.Aoc.Day3.Part2',
+                        'Elixir.Aoc.Day4.Part1','Elixir.Aoc.Day4.Part2',
+                        'Elixir.Aoc.Day5','Elixir.Aoc.Day6',
+                        'Elixir.Aoc.Day7']},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
